@@ -1,71 +1,50 @@
 # liminal_backrooms
 
-A Python-based application that enables dynamic conversations between multiple AI models in a graphical user interface. The system supports various AI models including Claude, OpenAI, Gemini, Grok etc, allowing them to interact with each other through text and image generation.
+A Python-based application that enables dynamic conversations between multiple AI models in a graphical user interface. The system supports Claude, GPT-5, and Gemini using direct API connections, allowing them to interact with each other through text.
 
 
 ## Features
 
 - Multi-model AI conversations with support for:
-  - Claude (Anthropic)
-  - OpenRouter Models:
-    - GPT (OpenAI)
-    - Grok (xAI)
-    - LLaMA (Meta)
-    - Gemini (Google)
-    - Anything on openrouter - if it's not listed add in config.
-  - Google Gemini 3 Pro Image Preview (via OpenRouter) for image generation (toggle in GUI)
-  - OpenAI Sora 2 video generation (selectable as AI-2; videos saved to `videos/`)
+  - **Claude** (Anthropic) - Claude Opus 4.5, Sonnet 4.5, Sonnet 4, Haiku 4.5
+  - **GPT-5** (OpenAI) - GPT-5, GPT-5 Pro, GPT-4o
+  - **Gemini** (Google) - Gemini 3 Pro, Gemini 2.5 Pro, Gemini 2.5 Flash
 
 - Advanced Features:
-  - Chain of Thought reasoning display optional
+  - Chain of Thought reasoning display (optional)
   - Customizable conversation turns and modes (AI-AI or Human-AI)
-  - Preset system prompt pairs
-  - Image generation and analysis capabilities
-  - Export functionality for conversations and generated images
+  - Preset system prompt pairs (Backrooms, ASCII Art, Muse/Artist)
+  - Export functionality for conversations
   - Modern dark-themed GUI interface
   - Conversation memory system
 
 ## Prerequisites
 
-- Python 3.10 or higher (but lower than 3.12)
+- Python 3.11 (required, not 3.10 or 3.12)
 - Poetry for dependency management
-- Windows 10/11 or Linux (tested on Ubuntu 20.04+)
+- macOS, Windows 10/11, or Linux
 
 ## API Keys Required
 
-You'll need API keys from the following services to use all features:
+You need API keys from these three services:
 
-1. Anthropic (Claude):
-   - Sign up at: https://console.anthropic.com/
-   - Endpoint: https://api.anthropic.com/v1/messages
-   - Models: claude-3-opus, claude-3.5-sonnet, claude-3-haiku
-
-2. OpenRouter:
-   - Sign up at: https://openrouter.ai/
-   - Endpoint: https://openrouter.ai/api/v1/chat/completions
-   - Provides access to: GPT-4, Grok, Qwen, LLaMA, Gemini, and more
-
-3. Replicate (for DeepSeek R1; optional):
-   - Sign up at: https://replicate.com/
-   - Used for DeepSeek R1 text generation; Flux image generation optional
-
-4. OpenAI (Sora video):
-   - Requires `OPENAI_API_KEY`
-   - Used for Sora 2/Pro video generation
-   - Optional: `OPENAI_BASE_URL` (defaults to `https://api.openai.com/v1`)
-   - Note: Image generation now uses Google Gemini via OpenRouter (no separate API key needed)
+| Service | Sign Up | Environment Variable |
+|---------|---------|---------------------|
+| Anthropic (Claude) | https://console.anthropic.com/ | `ANTHROPIC_API_KEY` |
+| OpenAI (GPT-5) | https://platform.openai.com/ | `OPENAI_API_KEY` |
+| Google AI (Gemini) | https://aistudio.google.com/ | `GEMINI_API_KEY` |
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
-cd [repository-name]
+git clone https://github.com/leegonzales/liminal_backrooms.git
+cd liminal_backrooms
 ```
 
-2. Install Poetry if you haven't already:
+2. Set Python version (if using pyenv):
 ```bash
-curl -sSL https://install.python-poetry.org | python3 -
+pyenv local 3.11.2
 ```
 
 3. Install dependencies using Poetry:
@@ -73,84 +52,87 @@ curl -sSL https://install.python-poetry.org | python3 -
 poetry install
 ```
 
-4. Create a `.env` file in the project root with your API keys (see Configuration section below)
-
-## Configuration
-
-1. Environment Variables (`.env`):
-   - Create a `.env` file in the project root with your API keys:
-   ```env
-   ANTHROPIC_API_KEY=your_anthropic_api_key
-   OPENROUTER_API_KEY=your_openrouter_api_key
-   OPENAI_API_KEY=your_openai_api_key  # For Sora video generation (optional)
-   ```
-
-2. Application Configuration (`config.py`):
-   - Runtime settings (e.g., turn delay)
-   - Available AI models in `AI_MODELS` dictionary
-   - System prompt pairs in `SYSTEM_PROMPT_PAIRS` dictionary
-   - Add new models or prompt pairs by updating these dictionaries
-
-3. Memory System (optional):
-   - Place JSON files at `memories/ai-1_memories.json` and `memories/ai-2_memories.json`
-   - Contents should be a JSON array of prior messages (simple strings are fine)
+4. Create a `.env` file with your API keys:
+```env
+ANTHROPIC_API_KEY=your_anthropic_api_key
+OPENAI_API_KEY=your_openai_api_key
+GEMINI_API_KEY=your_gemini_api_key
+```
 
 ## Usage
 
-1. Start the application:
+### Quick Start
+
+```bash
+./run.sh
+```
+
+Or manually:
 ```bash
 poetry run python main.py
 ```
 
-2. GUI Controls:
-   - Mode Selection: Choose between AI-AI conversation or Human-AI interaction
-   - Iterations: Set number of conversation turns (1-100)
-   - AI Model Selection: Choose models for AI-1 and AI-2
-   - Prompt Style: Select from predefined conversation styles
-   - Input Field: Enter your message or initial prompt
-   - Export: Save conversation and generated images
+### GUI Controls
 
-3. Special Features:
-   - Chain of Thought: DeepSeek models show reasoning process
-   - Image Generation: Google Gemini 3 Pro Image Preview creates images from prompts (via OpenRouter)
-   - Export: Saves conversations and images with timestamps
+- **Mode Selection**: Choose between AI-AI conversation or Human-AI interaction
+- **Iterations**: Set number of conversation turns (1-100)
+- **AI Model Selection**: Choose models for AI-1, AI-2, AI-3 (up to 5 AIs)
+- **Prompt Style**: Select from predefined conversation styles
+- **Input Field**: Enter your message or initial prompt
+- **Export**: Save conversation with timestamps
 
-### Using Sora 2 (Video Generation)
+### Available Models
 
-1. In `AI Model Selection`, set `AI-1` to an LLM and `AI-2` to `Sora 2` (or `Sora 2 Pro`).
-2. In `Prompt Style`, choose `Video Collaboration (AI-1 to Sora)`.
-   - `AI_2` prompt is intentionally blank (Sora does not use system prompts).
-3. Start the session. On each AI-2 turn, Sora renders a video from the AI-1 prompt.
-4. Output files are saved under `videos/` with timestamped filenames. The UI will print a line like:
-   - `[Sora] Video created: videos/2025...mp4`
-5. Note: Videos are not parsed back into context (yet); the next turn continues from text only.
+**Claude (Anthropic API)**
+- Claude Opus 4.5 (`claude-opus-4-5-20251101`)
+- Claude Sonnet 4.5 (`claude-sonnet-4-5-20250929`)
+- Claude Sonnet 4 (`claude-sonnet-4-20250514`)
+- Claude Haiku 4.5 (`claude-haiku-4-5-20251001`)
 
-Environment variables (optional):
+**GPT (OpenAI API)**
+- GPT-5 (`gpt-5`)
+- GPT-5 Pro (`gpt-5-pro`)
+- GPT-4o (`gpt-4o`)
+
+**Gemini (Google API)**
+- Gemini 3 Pro (`gemini-3-pro-preview`)
+- Gemini 2.5 Pro (`gemini-2.5-pro-preview-05-06`)
+- Gemini 2.5 Flash (`gemini-2.5-flash-preview-05-20`)
+
+## Configuration
+
+### Environment Variables (`.env`)
 ```env
-SORA_SECONDS=12        # clip duration (e.g., 4, 8, 10, 12)
-SORA_SIZE=1280x720     # resolution hint (e.g., 1280x720)
-OPENAI_BASE_URL=...    # override API base, if needed
+ANTHROPIC_API_KEY=your_anthropic_api_key
+OPENAI_API_KEY=your_openai_api_key
+GEMINI_API_KEY=your_gemini_api_key
 ```
-For the auto-trigger mode (not required when using Sora as AI-2), you can also enable generating a Sora video after AI-1 responses:
-```env
-SORA_AUTO_FROM_AI1=1
-```
-This will run Sora in the background and save videos to `videos/` without using the GUI embedding.
+
+### Application Configuration (`config.py`)
+- Runtime settings (e.g., turn delay)
+- Available AI models in `AI_MODELS` dictionary
+- System prompt pairs in `SYSTEM_PROMPT_PAIRS` dictionary
+
+### Memory System (optional)
+- Place JSON files at `memories/ai-1_memories.json` and `memories/ai-2_memories.json`
+- Contents should be a JSON array of prior messages
 
 ## Troubleshooting
 
-1. API Issues:
-   - Check API key validity
-   - Verify endpoint URLs in config
-   - Check API rate limits
-   - Monitor API response errors in console
+### API Issues
+- Check API key validity in `.env`
+- Monitor API response errors in console
+- GPT-5 uses `max_completion_tokens` (handled automatically)
 
-2. GUI Issues:
-   - Ensure PyQt6 is installed (handled by Poetry install)
-   - Check Python version compatibility
-   - Verify display resolution settings
+### GUI Issues
+- Ensure Python 3.11 is being used
+- PyQt6 is installed via Poetry
+- Font warnings about "Orbitron" are cosmetic and can be ignored
 
-
+### Common Errors
+- `ModuleNotFoundError`: Run `poetry install`
+- `max_tokens unsupported`: Already fixed for GPT-5
+- GUI not appearing: Check for Python process in dock/taskbar
 
 ## Contributing
 
@@ -163,8 +145,3 @@ This will run Sora in the background and save videos to `videos/` without using 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-
-
-
-
