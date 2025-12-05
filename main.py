@@ -25,6 +25,7 @@ from shared_utils import (
     call_claude_api,
     call_openrouter_api,
     call_openai_api,
+    call_gemini_api,
     call_replicate_api,
     call_deepseek_api,
     open_html_in_browser,
@@ -372,7 +373,7 @@ def ai_turn(ai_name, conversation, model, system_prompt, gui=None, is_branch=Fal
         print(f"Loaded 0 memories for {ai_name}")
     
     # Display the final processed messages for debugging
-    print(f"Sending to Claude:")
+    print(f"Sending to {model}:")
     print(f"Messages: {json.dumps(messages, indent=2)}")
     
     # Display the prompt
@@ -506,6 +507,48 @@ def ai_turn(ai_name, conversation, model, system_prompt, gui=None, is_branch=Fal
                 "ai_name": ai_name
             }
         
+        # Check for GPT models to use direct OpenAI API
+        if model_id.startswith("gpt-") or model_id.startswith("o1") or model_id.startswith("o3"):
+            print(f"Using OpenAI API for model: {model_id}")
+
+            # Ensure we have valid messages
+            if len(messages) > 0:
+                prompt_content = messages[-1].get("content", "")
+                context_messages = messages[:-1]
+            else:
+                prompt_content = "Connecting..."
+                context_messages = []
+
+            response = call_openai_api(prompt_content, context_messages, model_id, system_prompt, stream_callback=streaming_callback)
+
+            return {
+                "role": "assistant",
+                "content": response if response else "No response from OpenAI",
+                "model": model,
+                "ai_name": ai_name
+            }
+
+        # Check for Gemini models to use direct Google API
+        if "gemini" in model_id.lower():
+            print(f"Using Google Gemini API for model: {model_id}")
+
+            # Ensure we have valid messages
+            if len(messages) > 0:
+                prompt_content = messages[-1].get("content", "")
+                context_messages = messages[:-1]
+            else:
+                prompt_content = "Connecting..."
+                context_messages = []
+
+            response = call_gemini_api(prompt_content, context_messages, model_id, system_prompt, stream_callback=streaming_callback)
+
+            return {
+                "role": "assistant",
+                "content": response if response else "No response from Gemini",
+                "model": model,
+                "ai_name": ai_name
+            }
+
         # Check for DeepSeek models to use Replicate via DeepSeek API function
         if "deepseek" in model.lower():
             print(f"Using Replicate API for DeepSeek model: {model_id}")

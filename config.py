@@ -12,54 +12,23 @@ SHARE_CHAIN_OF_THOUGHT = False  # Set to True to allow AIs to see each other's C
 SORA_SECONDS=12
 SORA_SIZE="1280x720"
 
-# Available AI models
+# Available AI models (Claude, GPT-5, Gemini only - using direct APIs)
 AI_MODELS = {
+    # Claude models (Anthropic API)
     "Claude Opus 4.5": "claude-opus-4-5-20251101",
-    "Claude 3 Opus 20240229": "claude-3-opus-20240229",
-    "Claude 4.5 Sonnet": "claude-sonnet-4-5-20250929",
-    "Claude 4.5 Haiku": "claude-haiku-4-5-20251001",
-    "Claude 3.5 Sonnet": "claude-3-5-sonnet-20241022",
-    "Claude 4 Sonnet": "claude-sonnet-4-20250514",
-    "Gemini 3 Pro": "google/gemini-3-pro-preview",
-    "Claude 4 Opus": "claude-opus-4-20250514",
-    "GPT 5.1": "openai/gpt-5.1",
-    "GPT 4o": "openai/gpt-4o",
-    "Kimi K2": "moonshotai/kimi-k2",
-    "Kimi K2 Thinking": "moonshotai/kimi-k2-thinking",
-    "GPT 5 Pro": "openai/gpt-5-pro",
-    "Gemini 2.5 Pro": "google/gemini-2.5-pro",
-    "Claude Opus 4.1": "claude-opus-4-1-20250805",
-    "Grok 4": "x-ai/grok-4",
-    "Qwen 3 Max": "qwen/qwen3-max",
-    "DeepSeek R1": "deepseek-ai/deepseek-r1",
-    "qwen/qwen3-next-80b-a3b-thinking": "qwen/qwen3-next-80b-a3b-thinking",
-    "Hermes 4": "nousresearch/hermes-4-405b",
-    "Claude 3.7 Sonnet": "claude-3-7-sonnet-20250219",
-    "Gemini 2.5 Flash Lite": "google/gemini-2.5-flash-lite-preview-06-17",
-    "GPT 5": "openai/gpt-5",
-    "openai/gpt-oss-120b": "openai/gpt-oss-120b",
-    "openai/gpt-4.1": "openai/gpt-4.1",
-    "Grok 3": "x-ai/grok-3-beta",
-    "deepseek/deepseek-chat-v3-0324:free": "deepseek/deepseek-chat-v3-0324:free",
-    "google/gemma-3-27b-it:free": "google/gemma-3-27b-it:free",
-    "gpt-4.5-preview-2025-02-27": "gpt-4.5-preview-2025-02-27",
-    "qwen/qwen3-235b-a22b": "qwen/qwen3-235b-a22b",
-    "Claude 3.5 Sonnet 20241022": "claude-3-5-sonnet-20241022",
-    "Gemini 2.5 Flash": "google/gemini-2.5-flash-preview",
-    "o3": "openai/o3",
-    "openai/chatgpt-4o-latest": "openai/chatgpt-4o-latest",
-    "Gemini 2.5 Pro": "google/gemini-2.5-pro-preview-03-25",
-    "GPT 4.1": "openai/gpt-4.1",
-    "Claude 3.5 Haiku 20241022": "claude-3-5-haiku-20241022",
-    "Claude 3 Sonnet 20240229": "claude-3-sonnet-20240229",
-    "Llama 3.1 405B Instruct": "meta-llama/llama-3.1-405b-instruct",
-    "Flux 1.1 Pro": "black-forest-labs/flux-1.1-pro",
-    "google/gemini-2.0-flash-thinking-exp:free": "google/gemini-2.0-flash-thinking-exp:free",
-    "openai/o1-mini": "openai/o1-mini",
-    "openai/o1": "openai/o1",
-    "Sora 2": "sora-2",
-    "Sora 2 Pro": "sora-2-pro",
-    "Nano Banana Pro": "google/gemini-3-pro-image-preview",
+    "Claude Sonnet 4.5": "claude-sonnet-4-5-20250929",
+    "Claude Sonnet 4": "claude-sonnet-4-20250514",
+    "Claude Haiku 4.5": "claude-haiku-4-5-20251001",
+
+    # GPT models (OpenAI API)
+    "GPT-5": "gpt-5",
+    "GPT-5 Pro": "gpt-5-pro",
+    "GPT-4o": "gpt-4o",
+
+    # Gemini models (Google API)
+    "Gemini 3 Pro": "gemini-3-pro-preview",
+    "Gemini 2.5 Pro": "gemini-2.5-pro-preview-05-06",
+    "Gemini 2.5 Flash": "gemini-2.5-flash-preview-05-20",
 }
 
 # System prompt pairs library

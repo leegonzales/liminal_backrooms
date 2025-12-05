@@ -15,6 +15,7 @@ import base64
 from together import Together
 from openai import OpenAI
 import re
+import google.generativeai as genai
 try:
     from bs4 import BeautifulSoup
 except ImportError:
@@ -28,6 +29,9 @@ anthropic = Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))
 
 # Initialize OpenAI client
 openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+# Initialize Google Gemini
+genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
 
 def call_claude_api(prompt, messages, model_id, system_prompt=None, stream_callback=None):
     """Call the Claude API with the given messages and prompt
@@ -192,38 +196,96 @@ def call_llama_api(prompt, conversation_history, model, system_prompt):
         print(f"Error calling LLaMA API: {e}")
         return None
 
-def call_openai_api(prompt, conversation_history, model, system_prompt):
+def call_openai_api(prompt, conversation_history, model, system_prompt, stream_callback=None):
+    """Call the OpenAI API directly for GPT models.
+
+    Args:
+        stream_callback: Optional function(chunk: str) to call with each streaming token
+    """
     try:
         messages = []
-        
+
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
-        
+
         for msg in conversation_history:
             messages.append({"role": msg["role"], "content": msg["content"]})
-        
+
         messages.append({"role": "user", "content": prompt})
-        
-        response = openai.chat.completions.create(
+
+        # GPT-5 and reasoning models use max_completion_tokens instead of max_tokens
+        response = openai_client.chat.completions.create(
             model=model,
             messages=messages,
-            # Increase max_tokens and add n parameter
-            max_tokens=4000,
-            n=1,
-            temperature=1,
+            max_completion_tokens=4000,
             stream=True
         )
-        
+
         collected_messages = []
         for chunk in response:
-            if chunk.choices[0].delta.content is not None:  # Changed condition
-                collected_messages.append(chunk.choices[0].delta.content)
-                
+            if chunk.choices[0].delta.content is not None:
+                token = chunk.choices[0].delta.content
+                collected_messages.append(token)
+                if stream_callback:
+                    stream_callback(token)
+
         full_reply = ''.join(collected_messages)
         return full_reply
-        
+
     except Exception as e:
         print(f"Error calling OpenAI API: {e}")
+        return None
+
+
+def call_gemini_api(prompt, conversation_history, model, system_prompt, stream_callback=None):
+    """Call the Google Gemini API directly.
+
+    Args:
+        prompt: The user's message
+        conversation_history: List of previous messages
+        model: Model ID (e.g., 'gemini-2.0-flash', 'gemini-1.5-pro')
+        system_prompt: System instruction for the model
+        stream_callback: Optional function(chunk: str) to call with each streaming token
+    """
+    try:
+        # Create the model with system instruction
+        generation_config = {
+            "temperature": 1.0,
+            "max_output_tokens": 8192,
+        }
+
+        gemini_model = genai.GenerativeModel(
+            model_name=model,
+            generation_config=generation_config,
+            system_instruction=system_prompt if system_prompt else None
+        )
+
+        # Build conversation history for Gemini
+        history = []
+        for msg in conversation_history:
+            role = "user" if msg["role"] == "user" else "model"
+            history.append({"role": role, "parts": [msg["content"]]})
+
+        # Start chat with history
+        chat = gemini_model.start_chat(history=history)
+
+        # Generate response with streaming
+        response = chat.send_message(prompt, stream=True)
+
+        collected_chunks = []
+        for chunk in response:
+            if chunk.text:
+                collected_chunks.append(chunk.text)
+                if stream_callback:
+                    stream_callback(chunk.text)
+
+        full_reply = ''.join(collected_chunks)
+        return full_reply
+
+    except Exception as e:
+        print(f"Error calling Gemini API: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 def call_openrouter_api(prompt, conversation_history, model, system_prompt, stream_callback=None):
