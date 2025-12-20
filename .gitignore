@@ -172,3 +172,9 @@ memory/ai-2/*
 logs/*
 !logs/.gitkeep
 videos/*
+
+# Claude Code local config (may contain API keys)
+.claude/
+
+# Beads issue tracker (local database)
+.beads/
